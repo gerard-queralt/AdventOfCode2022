@@ -1,10 +1,10 @@
 package day1
 
+import fileReader.KotlinFileReader
 import java.io.File
 
 fun main() {
-    val day1path = File("src", "day1").absolutePath + File.separator
-    val input = File(day1path + "input.txt")
+    val input = KotlinFileReader.ReadInputOfDay(1)
 
     val calories = getCaloriesFromInput(input)
     val sortedCalories = calories.sorted().reversed()
