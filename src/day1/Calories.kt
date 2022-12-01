@@ -4,7 +4,7 @@ import fileReader.KotlinFileReader
 import java.io.File
 
 fun main() {
-    val input = KotlinFileReader.ReadInputOfDay(1)
+    val input = KotlinFileReader.readInputOfDay(1)
 
     val calories = getCaloriesFromInput(input)
     val sortedCalories = calories.sorted().reversed()
