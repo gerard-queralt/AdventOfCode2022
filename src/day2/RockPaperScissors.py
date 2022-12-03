@@ -1,81 +1,65 @@
 from fileReader.PythonFileReader import read_input_of_day
+from enum import Enum
 
-value_of_play = {
-    "X": 1,
-    "Y": 2,
-    "Z": 3
+
+class Play(Enum):
+    Rock = 1
+    Paper = 2
+    Scissors = 3
+
+
+class Outcome(Enum):
+    Loss = 0
+    Draw = 3
+    Win = 6
+
+
+# first is opponent play, second is your play
+result_of_match = {
+    (Play.Rock, Play.Rock): Outcome.Draw,
+    (Play.Rock, Play.Paper): Outcome.Win,
+    (Play.Rock, Play.Scissors): Outcome.Loss,
+
+    (Play.Paper, Play.Rock): Outcome.Loss,
+    (Play.Paper, Play.Paper): Outcome.Draw,
+    (Play.Paper, Play.Scissors): Outcome.Win,
+
+    (Play.Scissors, Play.Rock): Outcome.Win,
+    (Play.Scissors, Play.Paper): Outcome.Loss,
+    (Play.Scissors, Play.Scissors): Outcome.Draw
 }
 
-value_of_outcome = {
-    "X": 0,
-    "Y": 3,
-    "Z": 6
+translate_play = {
+    "A": Play.Rock,
+    "X": Play.Rock,
+    "B": Play.Paper,
+    "Y": Play.Paper,
+    "C": Play.Scissors,
+    "Z": Play.Scissors
+}
+
+translate_outcome = {
+    "X": Outcome.Loss,
+    "Y": Outcome.Draw,
+    "Z": Outcome.Win
 }
 
 
 def value_of_round_part_1(game_round):
-    total_value = 0
-    opponent_play, your_play = game_round.split()
-    total_value += value_of_play.get(your_play)
-    total_value += value_of_match(opponent_play, your_play)
-    return total_value
+    opponent_play, your_play = map(translate_play.get, game_round.split())
+    outcome = result_of_match.get((opponent_play, your_play))
+    return your_play.value + outcome.value
 
 
 def value_of_round_part_2(game_round):
     total_value = 0
     opponent_play, desired_outcome = game_round.split()
-    total_value += value_of_outcome.get(desired_outcome)
-    your_play = play_for_outcome(opponent_play, desired_outcome)
-    total_value += value_of_play.get(your_play)
-    return total_value
-
-
-def value_of_match(opponent_play, your_play):
-    if opponent_play == "A":
-        if your_play == "X":
-            return 3
-        elif your_play == "Y":
-            return 6
-        elif your_play == "Z":
-            return 0
-    if opponent_play == "B":
-        if your_play == "X":
-            return 0
-        elif your_play == "Y":
-            return 3
-        elif your_play == "Z":
-            return 6
-    if opponent_play == "C":
-        if your_play == "X":
-            return 6
-        elif your_play == "Y":
-            return 0
-        elif your_play == "Z":
-            return 3
-
-
-def play_for_outcome(opponent_play, desired_outcome):
-    if opponent_play == "A":
-        if desired_outcome == "X":
-            return "Z"
-        elif desired_outcome == "Y":
-            return "X"
-        elif desired_outcome == "Z":
-            return "Y"
-    if opponent_play == "B":
-        if desired_outcome == "X":
-            return "X"
-        elif desired_outcome == "Y":
-            return "Y"
-        elif desired_outcome == "Z":
-            return "Z"
-    if opponent_play == "C":
-        if desired_outcome == "X":
-            return "Y"
-        elif desired_outcome == "Y":
-            return "Z"
-        elif desired_outcome == "Z":
-            return "X"
+    opponent_play = translate_play.get(opponent_play)
+    desired_outcome = translate_outcome.get(desired_outcome)
+    for (play1, play2), outcome in result_of_match.items():
+        if play1 == opponent_play and outcome == desired_outcome:
+            your_play = play2
+            return your_play.value + desired_outcome.value
 
 
 if __name__ == "__main__":
