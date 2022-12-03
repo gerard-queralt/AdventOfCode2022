@@ -8,7 +8,9 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "${fileDirname}\\**.cpp",
-                "${fileDirname}\\**.h",
+                //"${fileDirname}\\**.h",
+                "${workspaceFolder}\\src\\fileReader\\**.cpp",
+                "${workspaceFolder}\\src\\fileReader\\**.h",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
