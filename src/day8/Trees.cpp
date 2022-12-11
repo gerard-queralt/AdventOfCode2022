@@ -4,6 +4,7 @@
 
 std::vector<std::vector<int> > trees;
 std::set<std::pair<int, int> > visibleTrees;
+int maxScenicScore = 0;
 
 void MarkBordersAsVisible()
 {
@@ -69,7 +70,59 @@ bool IsTreeVisible(int col, int row)
     return visibleFromCurrentSide;
 }
 
-void FindVisibleTrees()
+int ComputeScenicScoreOfTree(int col, int row)
+{
+    int nCol = trees.size();
+    int nRow = trees[0].size();
+    int tree = trees[col][row];
+    
+    //down
+    bool notBlocked = true;
+    int scoreDown = 0;
+    for (int i = col + 1; i < nCol && notBlocked; ++i)
+    {
+        ++scoreDown;
+        int current = trees[i][row];
+        if (tree <= current)
+            notBlocked = false;
+    }
+    
+    //up
+    notBlocked = true;
+    int scoreUp = 0;
+    for (int i = col - 1; 0 <= i && notBlocked; --i)
+    {
+        ++scoreUp;
+        int current = trees[i][row];
+        if (tree <= current)
+            notBlocked = false;
+    }
+
+    //right
+    notBlocked = true;
+    int scoreRight = 0;
+    for (int j = row + 1; j < nRow && notBlocked; ++j)
+    {
+        ++scoreRight;
+        int current = trees[col][j];
+        if (tree <= current)
+            notBlocked = false;
+    }
+
+    //left
+    notBlocked = true;
+    int scoreLeft = 0;
+    for (int j = row - 1; 0 <= j && notBlocked; --j)
+    {
+        ++scoreLeft;
+        int current = trees[col][j];
+        if (tree <= current)
+            notBlocked = false;
+    }
+    return scoreDown * scoreUp * scoreRight * scoreLeft;
+}
+
+void IterateTrees()
 {
     int nCol = trees.size();
     int nRow = trees[0].size();
@@ -77,8 +130,13 @@ void FindVisibleTrees()
     {
         for (int j = 1; j < nRow - 1; ++j)
         {
+            //part 1
             if (IsTreeVisible(i, j))
                 visibleTrees.insert(std::make_pair(i, j));
+
+            //part 2
+            int scenicScore = ComputeScenicScoreOfTree(i, j);
+            maxScenicScore = std::max(maxScenicScore, scenicScore);
         }
     }
 }
@@ -97,7 +155,8 @@ int main()
     }
 
     MarkBordersAsVisible();
-    FindVisibleTrees();
+    IterateTrees();
 
     std::cout << "Part 1: " << visibleTrees.size() << std::endl;
+    std::cout << "Part 2: " << maxScenicScore << std::endl;
 }
