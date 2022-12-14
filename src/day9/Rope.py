@@ -3,33 +3,38 @@ import numpy
 from fileReader.PythonFileReader import read_input_of_day
 from math import sqrt, floor
 
-rope_position = {"x": 0, "y": 0}
-tail_position = rope_position.copy()
-tail_visited = {(0, 0)}
+
+def create_rope_of_given_length(length):
+    rope = []
+    for x in range(length):
+        rope.append({"x": 0, "y": 0})
+    return rope
 
 
-def adjust_tail_position():
-    same_row = rope_position["x"] == tail_position["x"]
-    same_col = rope_position["y"] == tail_position["y"]
+def adjust_tail_position(head_position, tail_position):
+    same_row = head_position["x"] == tail_position["x"]
+    same_col = head_position["y"] == tail_position["y"]
     if not (same_row and same_col):
         if same_row:
-            distance = rope_position["y"] - tail_position["y"]
+            distance = head_position["y"] - tail_position["y"]
             if 1 < abs(distance):
                 tail_position["y"] += 1 * numpy.sign(distance)
         elif same_col:
-            distance = rope_position["x"] - tail_position["x"]
+            distance = head_position["x"] - tail_position["x"]
             if 1 < abs(distance):
                 tail_position["x"] += 1 * numpy.sign(distance)
         else:
-            distance_x = rope_position["x"] - tail_position["x"]
-            distance_y = rope_position["y"] - tail_position["y"]
+            distance_x = head_position["x"] - tail_position["x"]
+            distance_y = head_position["y"] - tail_position["y"]
             distance = sqrt(distance_x ** 2 + distance_y ** 2)
             if 1 < floor(distance):
                 tail_position["x"] += 1 * numpy.sign(distance_x)
                 tail_position["y"] += 1 * numpy.sign(distance_y)
 
 
-def move_rope_count_tail_movements():
+def move_rope_count_tail_movements(rope):
+    tail_visited = {(0, 0)}
+    direction_distance = map(lambda move: move.split(), movements)
     for (direction, distance) in direction_distance:
         if direction == "U":
             axis = "y"
@@ -44,17 +49,19 @@ def move_rope_count_tail_movements():
             axis = "x"
             step = -1
         for i in range(int(distance)):
-            rope_position[axis] += step
-            adjust_tail_position()
-            tail_visited.add((tail_position["x"], tail_position["y"]))
-            # print("Head: {}".format(rope_position))
-            # print("Tail: {}".format(tail_position))
+            rope[0][axis] += step
+            for j in range(1, len(rope)):
+                adjust_tail_position(rope[j-1], rope[j])
+            tail_visited.add((rope[-1]["x"], rope[-1]["y"]))
     return len(tail_visited)
 
 
 if __name__ == "__main__":
     input_file = read_input_of_day(9)
     movements = input_file.readlines()
-    direction_distance = map(lambda move: move.split(), movements)
-    unique_tail_positions = move_rope_count_tail_movements()
-    print("Part 1: {}".format(unique_tail_positions))
+    rope_length_2 = create_rope_of_given_length(2)
+    part_1_result = move_rope_count_tail_movements(rope_length_2)
+    print("Part 1: {}".format(part_1_result))
+    rope_length_10 = create_rope_of_given_length(10)
+    part_2_result = move_rope_count_tail_movements(rope_length_10)
+    print("Part 2: {}".format(part_2_result))
